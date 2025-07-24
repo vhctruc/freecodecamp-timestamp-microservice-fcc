@@ -113,6 +113,9 @@ This project can be deployed on:
 
 ## 📝 Author
 
+**trucvhc** - Data Engineer  
+- GitHub: [@trucvhc](https://github.com/trucvhc)
+
 Created for FreeCodeCamp Back End Development and APIs Certification
 
 ## 📄 License
