@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp Microservice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .api-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .api-endpoint {
+            background: #333;
+            color: #00ff88;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            border: 1px solid #555;
+        }
+        
+        .test-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+        
+        .result {
+            background: #1e1e1e;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border: 1px solid #333;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .examples {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .example-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .example-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .example-url {
+            font-family: 'Courier New', monospace;
+            color: #0066cc;
+            font-weight: bold;
+        }
+        
+        .example-result {
+            font-family: 'Courier New', monospace;
+            color: #333;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-success {
+            background: #28a745;
+        }
+        
+        .status-error {
+            background: #dc3545;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏰ Timestamp Microservice</h1>
+        <p class="subtitle">Convert dates to Unix timestamps and UTC strings</p>
+        
+        <div class="api-section">
+            <h3>API Endpoint</h3>
+            <div class="api-endpoint">GET /api/:date?</div>
+            <p><strong>Parameter:</strong> date (optional) - A date string or Unix timestamp</p>
+            <p><strong>Returns:</strong> JSON object with unix timestamp and UTC string</p>
+        </div>
+        
+        <div class="test-section">
+            <h3>🧪 Test the API</h3>
+            <div class="input-group">
+                <label for="dateInput">Enter a date string or Unix timestamp:</label>
+                <input type="text" id="dateInput" placeholder="e.g., 2015-12-25, 1451001600000, or leave empty for current time">
+            </div>
+            
+            <div class="btn-group">
+                <button onclick="processDate()">🚀 Process Date</button>
+                <button class="btn-secondary" onclick="getCurrentTime()">⏱️ Current Time</button>
+                <button class="btn-secondary" onclick="clearInput()">🗑️ Clear</button>
+            </div>
+            
+            <div class="input-group">
+                <label>API Response:</label>
+                <div id="result" class="result">Enter a date above and click "Process Date" to see the JSON response...</div>
+            </div>
+        </div>
+        
+        <div class="examples">
+            <h3>📋 Example API Calls</h3>
+            <div class="example-item">
+                <div class="example-url">GET /api/2015-12-25</div>
+                <div class="example-result">{"unix": 1451001600000, "utc": "Fri, 25 Dec 2015 00:00:00 GMT"}</div>
+            </div>
+            <div class="example-item">
+                <div class="example-url">GET /api/1451001600000</div>
+                <div class="example-result">{"unix": 1451001600000, "utc": "Fri, 25 Dec 2015 00:00:00 GMT"}</div>
+            </div>
+            <div class="example-item">
+                <div class="example-url">GET /api/</div>
+                <div class="example-result">{"unix": 1532389200000, "utc": "Mon, 23 Jul 2018 21:00:00 GMT"} (current time)</div>
+            </div>
+            <div class="example-item">
+                <div class="example-url">GET /api/invalid-date</div>
+                <div class="example-result">{"error": "Invalid Date"}</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Built with vanilla JavaScript | Handles Unix timestamps and date strings</p>
+        </div>
+    </div>
+
+    <script>
+        // Main timestamp processing function that simulates the API
+        function processTimestamp(dateParam) {
+            // If no date parameter provided, return current time
+            if (!dateParam || dateParam.trim() === '') {
+                const now = new Date();
+                return {
+                    unix: now.getTime(),
+                    utc: now.toUTCString()
+                };
+            }
+            
+            let date;
+            
+            // Check if the input is a Unix timestamp (all digits)
+            if (/^\d+$/.test(dateParam.trim())) {
+                // Convert string to number and create date
+                const timestamp = parseInt(dateParam.trim());
+                date = new Date(timestamp);
+            } else {
+                // Try to parse as date string
+                date = new Date(dateParam.trim());
+            }
+            
+            // Check if the date is valid
+            if (isNaN(date.getTime())) {
+                return { error: "Invalid Date" };
+            }
+            
+            return {
+                unix: date.getTime(),
+                utc: date.toUTCString()
+            };
+        }
+        
+        // Process the input date
+        function processDate() {
+            const input = document.getElementById('dateInput').value;
+            const result = processTimestamp(input);
+            displayResult(result);
+        }
+        
+        // Get current time
+        function getCurrentTime() {
+            document.getElementById('dateInput').value = '';
+            const result = processTimestamp('');
+            displayResult(result);
+        }
+        
+        // Clear input and result
+        function clearInput() {
+            document.getElementById('dateInput').value = '';
+            document.getElementById('result').textContent = 'Enter a date above and click "Process Date" to see the JSON response...';
+        }
+        
+        // Display the result in formatted JSON
+        function displayResult(result) {
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = JSON.stringify(result, null, 2);
+        }
+        
+        // Allow Enter key to process date
+        document.getElementById('dateInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                processDate();
+            }
+        });
+        
+        // Auto-focus on input when page loads
+        window.addEventListener('load', function() {
+            document.getElementById('dateInput').focus();
+        });
+        
+        // Test function to run all the FreeCodeCamp test cases
+        function runAllTests() {
+            console.log('Running FreeCodeCamp Timestamp Microservice Tests...\n');
+            
+            // Test 1: Valid date should return unix and utc keys
+            console.log('Test 1: Valid date format');
+            const test1 = processTimestamp('2015-12-25');
+            console.log('Input: 2015-12-25');
+            console.log('Output:', test1);
+            console.log('✓ Has unix key:', typeof test1.unix === 'number');
+            console.log('✓ Has utc key:', typeof test1.utc === 'string');
+            console.log('');
+            
+            // Test 2: Unix timestamp input
+            console.log('Test 2: Unix timestamp input');
+            const test2 = processTimestamp('1451001600000');
+            console.log('Input: 1451001600000');
+            console.log('Output:', test2);
+            console.log('✓ Correct result:', JSON.stringify(test2) === '{"unix":1451001600000,"utc":"Fri, 25 Dec 2015 00:00:00 GMT"}');
+            console.log('');
+            
+            // Test 3: Invalid date
+            console.log('Test 3: Invalid date');
+            const test3 = processTimestamp('invalid-date');
+            console.log('Input: invalid-date');
+            console.log('Output:', test3);
+            console.log('✓ Returns error:', test3.error === 'Invalid Date');
+            console.log('');
+            
+            // Test 4: Empty parameter (current time)
+            console.log('Test 4: Empty parameter (current time)');
+            const test4 = processTimestamp('');
+            console.log('Input: (empty)');
+            console.log('Output:', test4);
+            console.log('✓ Has unix key:', typeof test4.unix === 'number');
+            console.log('✓ Has utc key:', typeof test4.utc === 'string');
+            console.log('');
+            
+            console.log('All tests completed! Check the results above.');
+        }
+        
+        // Run tests automatically when page loads (for verification)
+        window.addEventListener('load', function() {
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html>
